@@ -6,7 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
-    "php": "C:\\xampp\\php\\php.exe -S localhost:3000 backend/public/index.php"
+    "php": "C:\\xampp\\php\\php.exe -S localhost:3000 backend/public/index.php",
+    "sync": "cmd /c push.bat",
+    "auto-sync": "cmd /c start-auto-sync.bat"
   },
   "keywords": [],
   "author": "",
