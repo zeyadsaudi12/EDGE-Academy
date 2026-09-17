@@ -1,0 +1,43 @@
+const mongoose = require('mongoose');
+
+const userSchema = new mongoose.Schema({
+    username: { type: String, required: true, unique: true },
+    firstName: { type: String, required: true },
+    lastName: { type: String, required: true },
+    birthDate: { type: Date, required: true },
+    phone: { type: String, required: true, unique: true },
+    parentPhone: { type: String, required: true },
+    nationalId: { type: String, required: true, unique: true },
+    governorate: { type: String, required: true },
+    grade: { type: String, required: true },
+    section: { type: String }, // Optional for prep school
+    secondLanguage: { type: String }, // Optional for prep school
+    password: { type: String, required: true },
+    balance: { type: Number, default: 0 },
+    role: { type: String, enum: ['student', 'admin'], default: 'student' },
+    
+    // تم إضافة حقول المتابعة والاشتراك لقاعدة البيانات هنا بشكل صحيح
+    followedTeachers: { 
+        type: [String], 
+        default: [] 
+    },
+    subscribedVideos: { 
+        type: [String], 
+        default: [] 
+    },
+    subscribedCourses: {
+        type: [{
+            courseId: { type: String, required: true },
+            purchasedAt: { type: Date, default: Date.now },
+            codeUsed: { type: String, default: '' }
+        }],
+        default: []
+    },
+    lastActive: {
+        type: Date,
+        default: Date.now
+    }
+    
+}, { timestamps: true });
+
+module.exports = mongoose.model('User', userSchema);

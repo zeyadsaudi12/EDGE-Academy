@@ -1,0 +1,521 @@
+/* ============================================
+   MASAR Video Security System v4.2 - CSS
+   ============================================ */
+
+.secure-video-page * {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.secure-video-page img,
+.secure-video-page video,
+.secure-video-page canvas {
+    -webkit-user-drag: none;
+}
+
+@media print {
+    body { display: none !important; }
+}
+
+.secure-video-page {
+    -webkit-touch-callout: none;
+}
+
+.secure-video-page.recording-detected #videoContainer::before {
+    content: '🚫 المحتوى محمي بالكامل ضد التسجيل أو البث الخارجي';
+    position: absolute;
+    inset: 0;
+    background: #000;
+    z-index: 999990;
+    color: #dda852;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Cairo', sans-serif;
+    font-size: 1.15rem;
+    font-weight: bold;
+    pointer-events: none;
+    direction: rtl;
+}
+
+.video-secure-container {
+    position: relative;
+    width: 100%;
+    background: #000;
+    overflow: hidden;
+    aspect-ratio: 16 / 9;
+}
+
+.video-theater .video-secure-container {
+    border-radius: 0;
+}
+
+.video-secure-container video {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: contain;
+    pointer-events: none;
+}
+
+.video-secure-container video::-webkit-media-controls,
+.video-secure-container video::-webkit-media-controls-enclosure {
+    display: none !important;
+}
+
+.video-watermark {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 99999;
+    overflow: hidden;
+}
+
+/* ============================================
+   High-Frequency Video Codec Disruptor
+   فصل وتشتيت ترميز كروت الشاشة (Nvidia ShadowPlay NVENC)
+   + Mobile MediaProjection Blackout Layer
+   ============================================ */
+.video-disruptor-layer {
+    position: absolute;
+    inset: 0;
+    z-index: 998;
+    pointer-events: none;
+    background: rgba(255,255,255,0.001);
+    mix-blend-mode: difference;
+    /* تعزيز التسريع العتادي لطبقة الحماية */
+    transform: translate3d(0, 0, 0) rotate(0.001deg);
+    backface-visibility: hidden;
+    perspective: 1000px;
+    animation: disruptNVENC 0.016s steps(1) infinite;
+    will-change: opacity, filter;
+}
+
+@keyframes disruptNVENC {
+    0%   { background: rgba(0,0,0,0.004);   opacity: 0.99;  filter: contrast(100%);   }
+    25%  { background: rgba(255,255,255,0.003); opacity: 1; filter: contrast(100.2%); }
+    50%  { background: rgba(0,0,0,0.004);   opacity: 0.98;  filter: contrast(99.9%);  }
+    75%  { background: rgba(255,255,255,0.002); opacity: 1; filter: contrast(100.1%); }
+    100% { background: rgba(0,0,0,0.004);   opacity: 0.99;  filter: contrast(100%);   }
+}
+
+/* ── طبقة حماية الموبايل من Screen Recording (MediaProjection) ── */
+.mobile-record-shield {
+    position: absolute;
+    inset: 0;
+    z-index: 997;
+    pointer-events: none;
+    /* mix-blend-mode: difference يخلي الفيديو أسود في الـ Screen Recorder */
+    mix-blend-mode: difference;
+    background: #ffffff;
+    opacity: 0.005;
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+    will-change: opacity;
+    animation: mobileShield 0.008s steps(1) infinite;
+}
+
+@keyframes mobileShield {
+    0%  { opacity: 0.005; background: #fff; }
+    50% { opacity: 0.006; background: #000; }
+}
+
+.custom-video-controls {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: linear-gradient(0deg, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.5) 60%, transparent 100%);
+    padding: 55px 18px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 20;
+    opacity: 0;
+    transition: opacity 0.35s ease;
+    direction: ltr;
+}
+
+.video-secure-container:hover .custom-video-controls,
+.video-secure-container.paused .custom-video-controls {
+    opacity: 1;
+}
+
+.video-progress-wrapper {
+    width: 100%;
+    height: 5px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 10px;
+    cursor: pointer;
+    pointer-events: auto;
+    position: relative;
+}
+
+.video-progress-wrapper:hover {
+    height: 7px;
+}
+
+.video-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #dda852, #ffd700);
+    border-radius: 10px;
+    width: 0%;
+    position: relative;
+}
+
+.video-progress-fill::after {
+    content: '';
+    position: absolute;
+    right: -7px; top: 50%;
+    transform: translateY(-50%);
+    width: 14px; height: 14px;
+    background: #ffd700;
+    border-radius: 50%;
+    box-shadow: 0 0 12px rgba(255,215,0,0.7);
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.video-progress-wrapper:hover .video-progress-fill::after { opacity: 1; }
+
+.controls-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.controls-left, .controls-right {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.ctrl-btn {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #fff;
+    width: 38px; height: 38px;
+    border-radius: 9px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(6px);
+}
+
+.ctrl-btn:hover {
+    background: rgba(221,168,82,0.28);
+    border-color: rgba(221,168,82,0.5);
+    transform: scale(1.07);
+}
+
+.ctrl-btn.play-btn {
+    width: 46px; height: 46px;
+    background: linear-gradient(135deg, #dda852, #e8b76a);
+    color: #13201c;
+    border: none;
+    font-size: 1.25rem;
+    box-shadow: 0 4px 16px rgba(221,168,82,0.45);
+    border-radius: 50%;
+}
+
+.ctrl-btn.play-btn:hover {
+    box-shadow: 0 6px 26px rgba(221,168,82,0.65);
+    transform: scale(1.1);
+}
+
+.time-display {
+    color: rgba(255,255,255,0.75);
+    font-size: 0.82rem;
+    font-family: 'Courier New', monospace;
+    letter-spacing: 1px;
+    direction: ltr;
+    min-width: 100px;
+    text-align: center;
+}
+
+.volume-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.volume-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 72px; height: 4px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 4px;
+    outline: none;
+    direction: ltr;
+}
+
+.volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 13px; height: 13px;
+    background: #dda852;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 8px rgba(221,168,82,0.5);
+}
+
+.volume-slider::-moz-range-thumb {
+    width: 13px; height: 13px;
+    background: #dda852;
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+}
+
+.quality-badge {
+    background: rgba(221,168,82,0.14);
+    color: #dda852;
+    border: 1px solid rgba(221,168,82,0.3);
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.73rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 1px;
+}
+
+.quality-badge:hover { background: rgba(221,168,82,0.28); }
+
+.quality-menu {
+    position: absolute;
+    bottom: 75px; right: 16px;
+    background: rgba(12,12,12,0.97);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(221,168,82,0.2);
+    border-radius: 12px;
+    padding: 8px 0;
+    z-index: 50;
+    display: none;
+    min-width: 130px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.7);
+}
+
+.quality-menu.active { display: block; animation: fadeSlideUp 0.2s ease; }
+
+.quality-option {
+    display: block; width: 100%;
+    padding: 9px 16px;
+    background: none; border: none;
+    color: rgba(255,255,255,0.72);
+    font-size: 0.88rem;
+    cursor: pointer;
+    text-align: right;
+    transition: all 0.15s;
+}
+
+.quality-option:hover { background: rgba(221,168,82,0.14); color: #dda852; }
+.quality-option.active { color: #dda852; font-weight: 700; }
+.quality-option.active::before { content: '✓ '; }
+
+@keyframes fadeSlideUp {
+    from { opacity:0; transform:translateY(8px); }
+    to   { opacity:1; transform:translateY(0); }
+}
+
+.security-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.93);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999999;
+    backdrop-filter: blur(16px);
+    animation: overlayIn 0.3s ease;
+}
+
+@keyframes overlayIn { from{opacity:0} to{opacity:1} }
+
+.warning-box {
+    background: linear-gradient(145deg, #1a0a0a, #120000);
+    border: 2px solid rgba(231,76,60,0.55);
+    padding: 48px 42px;
+    border-radius: 24px;
+    text-align: center;
+    max-width: 460px;
+    width: 90%;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.8), 0 0 70px rgba(231,76,60,0.18);
+    animation: warningPulse 0.45s ease;
+}
+
+@keyframes warningPulse {
+    0%   { transform: scale(0.85); opacity:0; }
+    55%  { transform: scale(1.02); }
+    100% { transform: scale(1); opacity:1; }
+}
+
+.warning-icon {
+    font-size: 4rem;
+    margin-bottom: 12px;
+    display: block;
+    animation: shakeIcon 0.55s ease;
+}
+
+@keyframes shakeIcon {
+    0%,100% { transform:translateX(0); }
+    20%      { transform:translateX(-10px); }
+    40%      { transform:translateX(10px); }
+    60%      { transform:translateX(-5px); }
+    80%      { transform:translateX(5px); }
+}
+
+.warning-box h2 { color:#e74c3c; font-size:1.55rem; margin:0 0 13px; font-weight:800; font-family:'Cairo', sans-serif; }
+.warning-box p  { color:rgba(255,255,255,0.75); font-size:0.97rem; line-height:1.8; margin:0 0 8px; font-family:'Cairo', sans-serif; }
+.warning-box .report-note { color:rgba(231,76,60,0.7); font-size:0.83rem; font-weight:600; margin-top:8px; }
+
+.warning-dismiss-btn {
+    margin-top: 22px;
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    color: #fff;
+    border: none;
+    padding: 13px 38px;
+    border-radius: 12px;
+    font-size: 0.97rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.28s;
+    box-shadow: 0 6px 20px rgba(231,76,60,0.45);
+    font-family:'Cairo', sans-serif;
+}
+
+.warning-dismiss-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(231,76,60,0.55);
+}
+
+.violation-badge {
+    position: fixed;
+    top: 72px; left: 16px;
+    background: rgba(231,76,60,0.12);
+    border: 1px solid rgba(231,76,60,0.35);
+    color: #e74c3c;
+    padding: 7px 15px;
+    border-radius: 30px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    z-index: 9999;
+    backdrop-filter: blur(10px);
+    display: none;
+}
+
+.violation-badge.visible {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    animation: badgeIn 0.3s ease;
+}
+
+@keyframes badgeIn {
+    from { opacity:0; transform:translateY(-10px); }
+    to   { opacity:1; transform:translateY(0); }
+}
+
+/* ============================================
+   Shield Indicator
+   ============================================ */
+.shield-indicator {
+    position: absolute;
+    top: 24px; 
+    right: 24px;
+    background: rgba(44,167,114,0.75);
+    border: 1px solid rgba(44,167,114,0.5);
+    color: #fff;
+    padding: 6px 14px;
+    border-radius: 30px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    backdrop-filter: blur(12px);
+    font-family: 'Cairo', sans-serif;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.shield-dot {
+    width: 8px; height: 8px;
+    background: #2ca772;
+    border-radius: 50%;
+    animation: shieldPulse 2s ease infinite;
+}
+
+@keyframes shieldPulse {
+    0%,100% { opacity:1; box-shadow:0 0 0 0 rgba(44,167,114,0.8); }
+    50%      { opacity:0.6; box-shadow:0 0 0 8px rgba(44,167,114,0); }
+}
+
+.video-loading-overlay {
+    position: absolute;
+    top:0; left:0;
+    width:100%; height:100%;
+    background: rgba(0,0,0,0.88);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 15;
+}
+
+.loading-spinner {
+    width: 50px; height: 50px;
+    border: 3px solid rgba(221,168,82,0.15);
+    border-top-color: #dda852;
+    border-radius: 50%;
+    animation: spin 0.75s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.loading-text {
+    color: rgba(255,255,255,0.6);
+    margin-top: 14px;
+    font-size: 0.88rem;
+}
+
+@media (max-width: 768px) {
+    .custom-video-controls { padding: 30px 12px 10px; }
+    .ctrl-btn { width:34px; height:34px; font-size:0.95rem; }
+    .ctrl-btn.play-btn { width:42px; height:42px; }
+    .time-display { font-size:0.73rem; min-width:80px; }
+    .volume-slider { width:50px; }
+    .warning-box { padding:32px 22px; }
+    .warning-box h2 { font-size:1.25rem; }
+    .shield-indicator { top: 16px; right: 16px; padding: 5px 12px; font-size: 0.75rem; }
+}
+
+@media (max-width: 480px) {
+    .quality-badge, .volume-wrapper { display:none; }
+    .controls-row { gap:5px; }
+}
+
+/* Fake Fullscreen for iOS/Mobile overlays */
+.video-secure-container.fake-fullscreen {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    z-index: 2147483647 !important;
+    background: #000 !important;
+    max-width: none !important;
+    max-height: none !important;
+    border-radius: 0 !important;
+}
+
+.video-secure-container.fake-fullscreen video {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important;
+}

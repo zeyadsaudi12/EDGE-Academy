@@ -1,0 +1,45 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Redirect all /api requests to the backend public router
+    RewriteRule ^api(/.*)?$ backend/public/index.php [L,QSA]
+
+    # Don't rewrite existing files or directories (like assets, images, CSS, JS)
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    # Internally rewrite clean URL requests to the actual .php file
+    RewriteCond %{REQUEST_FILENAME}.php -f
+    RewriteRule ^([^\.]+)$ $1.php [NC,L]
+</IfModule>
+
+# Enable GZIP compression for faster file transfers
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/x-javascript application/json application/xml image/svg+xml
+</IfModule>
+
+# Enable Browser Caching (Expires Headers) to load static assets instantly on repeat visits
+<IfModule mod_expires.c>
+    ExpiresActive On
+
+    # Cache CSS and JS for 1 week
+    ExpiresByType text/css "access plus 1 week"
+    ExpiresByType text/javascript "access plus 1 week"
+    ExpiresByType application/javascript "access plus 1 week"
+    ExpiresByType application/x-javascript "access plus 1 week"
+
+    # Cache Images for 1 month
+    ExpiresByType image/jpeg "access plus 1 month"
+    ExpiresByType image/png "access plus 1 month"
+    ExpiresByType image/gif "access plus 1 month"
+    ExpiresByType image/webp "access plus 1 month"
+    ExpiresByType image/svg+xml "access plus 1 month"
+    ExpiresByType image/x-icon "access plus 1 month"
+
+    # Cache Webfonts for 1 year
+    ExpiresByType font/ttf "access plus 1 year"
+    ExpiresByType font/woff "access plus 1 year"
+    ExpiresByType font/woff2 "access plus 1 year"
+    ExpiresByType font/otf "access plus 1 year"
+</IfModule>
