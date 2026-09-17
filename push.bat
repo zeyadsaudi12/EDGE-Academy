@@ -10,10 +10,8 @@ echo ========================================================
 
 git add .
 
-set "MSG=%*"
-if "!MSG!"=="" (
-    set "MSG=Update %DATE% %TIME%"
-)
+set "MSG=%~1"
+if "!MSG!"=="" set "MSG=Update %DATE% %TIME%"
 
 git commit -m "!MSG!"
 if %ERRORLEVEL% EQU 0 (
