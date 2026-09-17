@@ -1,31 +1,32 @@
 @echo off
-chcp 65001 >nul
+setlocal enabledelayedexpansion
 title Masar - Sync to GitHub
 set PATH=C:\Users\mzeya\AppData\Local\Programs\Git\cmd;%PATH%
+cd /d "%~dp0"
 
 echo ========================================================
-echo         Masar - جاري رفع التحديثات إلى GitHub...
+echo         Masar - Syncing project with GitHub...
 echo ========================================================
 
 git add .
-set commit_msg=%*
-if "%commit_msg%"=="" (
-    set commit_msg=Auto update on %date% at %time%
+
+set "MSG=%*"
+if "!MSG!"=="" (
+    set "MSG=Update %DATE% %TIME%"
 )
 
-git commit -m "%commit_msg%"
-git push origin main
-
+git commit -m "!MSG!"
 if %ERRORLEVEL% EQU 0 (
+    git push origin main
     echo.
     echo ========================================================
-    echo   [✔] تم الرفع بنجاح إلى GitHub!
+    echo   [SUCCESS] Pushed changes to GitHub successfully!
     echo ========================================================
 ) else (
     echo.
-    echo ========================================================
-    echo   [!] تنبيه: حدث خطأ أثناء الرفع. يرجى التأكد من الرابط والصلاحيات.
-    echo ========================================================
+    echo [INFO] Everything is already up to date.
 )
 
-timeout /t 5
+echo.
+echo Closing in 3 seconds...
+ping 127.0.0.1 -n 4 >nul
